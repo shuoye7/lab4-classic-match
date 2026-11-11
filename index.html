@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="文言文连连看：通过配对原句、释义、实词与寓意复习文言文知识。"
+    />
+    <link rel="icon" href="data:," />
+    <title>句读 · 文言文连连看</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="句读首页">
+        <span class="brand-mark"><i data-lucide="library-big"></i></span>
+        <span class="brand-copy">
+          <strong>句读</strong>
+          <small>CLASSIC MATCH</small>
+        </span>
+      </a>
+      <div class="topbar-note">
+        <i data-lucide="feather"></i>
+        三套题库 · 六组一对
+      </div>
+      <div class="top-controls">
+        <button class="control-button" id="soundToggle" type="button" aria-pressed="true">
+          <i data-lucide="volume-2"></i>
+          <span>音效</span>
+        </button>
+        <button class="control-button" id="hintButton" type="button">
+          <i data-lucide="lightbulb"></i>
+          <span>提示</span>
+          <em id="hintCount">3</em>
+        </button>
+        <button class="control-button" id="pauseButton" type="button">
+          <i data-lucide="pause"></i>
+          <span>暂停</span>
+        </button>
+        <button class="icon-button" id="restartTopButton" type="button" aria-label="重新开始本局" title="重新开始">
+          <i data-lucide="rotate-ccw"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">READ · MATCH · REMEMBER</p>
+          <h1>让一句古文，找到它今天的解释。</h1>
+        </div>
+        <p class="heading-copy">
+          从原句到释义，从实词到今义。每一次正确连接，都是一次有上下文的记忆。
+        </p>
+      </div>
+
+      <div class="game-layout">
+        <section class="game-column" aria-labelledby="boardHeading">
+          <div class="game-toolbar">
+            <div class="bank-tabs" id="bankTabs" aria-label="选择题库"></div>
+            <button class="text-button" id="restartButton" type="button">
+              <i data-lucide="refresh-cw"></i>
+              重新开始
+            </button>
+          </div>
+
+          <div class="scorebar">
+            <div class="score-item">
+              <span><i data-lucide="timer"></i> 用时</span>
+              <strong id="timerValue">00:00</strong>
+            </div>
+            <div class="score-item">
+              <span><i data-lucide="sparkles"></i> 得分</span>
+              <strong id="scoreValue">0</strong>
+            </div>
+            <div class="score-item">
+              <span><i data-lucide="flame"></i> 连对</span>
+              <strong id="streakValue">0</strong>
+            </div>
+            <div class="score-item">
+              <span><i data-lucide="layout-grid"></i> 进度</span>
+              <strong id="progressValue">0 / 6</strong>
+            </div>
+          </div>
+
+          <div class="progress-track" aria-label="本局配对进度">
+            <span id="progressBar"></span>
+          </div>
+
+          <div class="board-wrap">
+            <div class="board-heading">
+              <div>
+                <span class="board-kicker">当前题库</span>
+                <h2 id="boardHeading">论语篇</h2>
+              </div>
+              <span class="board-counter" id="boardCounter">12 张卡片</span>
+            </div>
+            <div class="match-board" id="matchBoard" aria-live="polite"></div>
+            <div class="pause-veil" id="pauseVeil" hidden>
+              <span><i data-lucide="pause"></i></span>
+              <strong>本局已暂停</strong>
+              <p>点击顶部“继续”回到棋盘</p>
+            </div>
+          </div>
+
+          <div class="feedback-bar" id="feedbackBar" aria-live="polite">
+            <span class="feedback-icon"><i data-lucide="mouse-pointer-click"></i></span>
+            <div>
+              <strong id="feedbackTitle">选择一张卡片开始</strong>
+              <p id="feedbackText">找到原句与对应释义，连续配对可以提升得分。</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="status-column" aria-label="游戏状态">
+          <section class="status-section progress-section">
+            <div class="section-heading">
+              <span>本局进度</span>
+              <span class="status-badge" id="statusBadge">进行中</span>
+            </div>
+            <div class="progress-ring" id="progressRing" style="--progress: 0%">
+              <div>
+                <strong id="ringValue">0%</strong>
+                <span>已完成</span>
+              </div>
+            </div>
+            <p id="progressCaption">已完成 0 组，还剩 6 组。</p>
+          </section>
+
+          <section class="status-section">
+            <div class="section-heading">
+              <span>本轮成就</span>
+              <i data-lucide="award"></i>
+            </div>
+            <div class="achievement" id="achievementCard">
+              <span class="achievement-icon"><i data-lucide="book-open"></i></span>
+              <div>
+                <strong id="achievementTitle">初入句读</strong>
+                <p id="achievementText">完成第一组配对，点亮本轮成就。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="status-section note-section">
+            <div class="section-heading">
+              <span>知识小笺</span>
+              <i data-lucide="scroll-text"></i>
+            </div>
+            <p id="knowledgeNote">每一次正确连线后，这里会留下对应的知识解释。</p>
+            <span class="note-source" id="noteSource">句读 · 学习手记</span>
+          </section>
+
+          <section class="status-section best-section">
+            <div class="best-row">
+              <span><i data-lucide="clock-3"></i> 本局最快</span>
+              <strong id="bestTime">—</strong>
+            </div>
+            <div class="best-row">
+              <span><i data-lucide="target"></i> 本局错误</span>
+              <strong id="errorValue">0</strong>
+            </div>
+          </section>
+
+          <section class="status-section scorebook-section">
+            <div class="section-heading">
+              <span>个人成绩册</span>
+              <i data-lucide="trophy"></i>
+            </div>
+            <div class="scorebook-list" id="scorebookList"></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <div class="result-overlay" id="resultOverlay" hidden>
+      <section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <button class="close-button" id="closeResultButton" type="button" aria-label="关闭结算">
+          <i data-lucide="x"></i>
+        </button>
+        <span class="result-seal"><i data-lucide="check"></i></span>
+        <p class="eyebrow">ROUND COMPLETE</p>
+        <h2 id="resultTitle">本局已完成</h2>
+        <p id="resultSubtitle">你把散落的句子重新连在了一起。</p>
+        <div class="result-stats">
+          <div>
+            <strong id="resultTime">00:00</strong>
+            <span>完成用时</span>
+          </div>
+          <div>
+            <strong id="resultScore">0</strong>
+            <span>本局得分</span>
+          </div>
+          <div>
+            <strong id="resultStreak">0</strong>
+            <span>最高连对</span>
+          </div>
+          <div>
+            <strong id="resultErrors">0</strong>
+            <span>错误次数</span>
+          </div>
+          <div>
+            <strong id="resultHints">0</strong>
+            <span>提示次数</span>
+          </div>
+        </div>
+        <div class="result-achievement">
+          <i data-lucide="award"></i>
+          <div>
+            <span>本轮成就</span>
+            <strong id="resultAchievement">文心初成</strong>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="secondary-button" id="closeResult" type="button">返回棋盘</button>
+          <button class="primary-button" id="playAgainButton" type="button">
+            <i data-lucide="rotate-ccw"></i>
+            再玩一局
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="assets/lucide.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
